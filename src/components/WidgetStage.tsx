@@ -152,7 +152,7 @@ export const WidgetStage: React.FC<WidgetStageProps> = ({
       data-step={step}
       data-in-view={inView ? 'true' : 'false'}
       aria-label={`Interactive simulation stage: ${title}. Use left and right arrow keys to step.`}
-      className="focus:outline-none focus:ring-1 focus:ring-sky-500/40 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl overflow-hidden flex flex-col justify-between"
+      className="h-full min-h-0 lg:h-auto focus:outline-none focus:ring-1 focus:ring-sky-500/40 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl overflow-hidden flex flex-col justify-between"
     >
       <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-slate-800/80 bg-slate-950/50">
         <div className="flex items-center gap-2">
@@ -164,24 +164,34 @@ export const WidgetStage: React.FC<WidgetStageProps> = ({
         <DataBadge kind={dataKind} customText={badgeCustomText} />
       </div>
 
-      <div className="p-4 sm:p-6 min-h-[360px] sm:min-h-[420px] flex items-center justify-center relative overflow-hidden bg-slate-950/40">
-        <WidgetErrorBoundary title={title} onReset={() => onStepChange(0)}>
-          {hasMounted ? (
-            <Suspense
-              fallback={
-                <div className="text-xs text-slate-500 font-mono" role="status">
+      <div className="flex-1 min-h-0 relative bg-slate-950/40">
+        {/* The widget body scrolls inside the 45vh mobile stage so the step
+            controls below stay reachable; on desktop the stage grows to fit. */}
+        <div
+          tabIndex={0}
+          aria-label={`${title} interactive content. Scroll for more.`}
+          className="h-full overflow-y-auto lg:overflow-visible focus:outline-none focus:ring-1 focus:ring-sky-500/40"
+        >
+          <div className="min-h-full lg:min-h-[420px] p-4 sm:p-6 flex items-center justify-center">
+            <WidgetErrorBoundary title={title} onReset={() => onStepChange(0)}>
+              {hasMounted ? (
+                <Suspense
+                  fallback={
+                    <div className="text-xs text-slate-500 font-mono" role="status">
+                      Loading interactive stage…
+                    </div>
+                  }
+                >
+                  <React.Fragment>{renderedChildren}</React.Fragment>
+                </Suspense>
+              ) : (
+                <div className="text-xs text-slate-500 font-mono" data-testid={`widget-${id}-loading`}>
                   Loading interactive stage…
                 </div>
-              }
-            >
-              <React.Fragment>{renderedChildren}</React.Fragment>
-            </Suspense>
-          ) : (
-            <div className="text-xs text-slate-500 font-mono" data-testid={`widget-${id}-loading`}>
-              Loading interactive stage…
-            </div>
-          )}
-        </WidgetErrorBoundary>
+              )}
+            </WidgetErrorBoundary>
+          </div>
+        </div>
 
         <div className="sr-only" aria-live="polite" aria-atomic="true">
           {liveCaption}

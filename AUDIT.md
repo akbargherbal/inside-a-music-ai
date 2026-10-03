@@ -176,6 +176,44 @@ Status legend: ✅ conforms · ⚠️ partial · ❌ missing/broken · ➖ N/A
 
 ---
 
-## Final status
+## Final status — 2026-10-03
 
-_(to be updated as phases complete)_
+The hardening pass is complete in code and verified locally. The only items not
+finished are external (Lighthouse on a URL) or intentionally blocked (promoting
+to live over existing content).
+
+### Resolved since the Phase 1 matrix
+
+| Area | Was | Now |
+|---|---|---|
+| TypeScript strict | ❌ no `strict` | ✅ `strict` + `noUnusedLocals` + `noUnusedParameters`, 0 errors |
+| Theme light/dark | ❌ dark only | ✅ full `.light` token inversion + toggle |
+| Widget error boundary | ❌ none | ✅ `WidgetErrorBoundary` in `WidgetStage` |
+| Lazy / in-view mount | ❌ all static | ✅ `React.lazy` + IntersectionObserver mount-at-30% |
+| Scroll ↔ step | ⚠️ observer recreated per step, oscillation | ✅ central `useWidgetStep`, reading-line selection, user-intent lock |
+| Mobile sticky ~45vh | ⚠️ stage taller than viewport, covered beats | ✅ `h-[45vh] lg:h-auto`, body scrolls, controls always visible |
+| Deep links on load / from scrolled | ⚠️ no scroll-in | ✅ mounts and `hashchange` both scroll and set the step |
+| Reduced motion | ❌ observer disabled | ✅ steps still advance, no autoplay |
+| Test tooling | ❌ hand-rolled, vacuous | ✅ Vitest 123 + Playwright (4 projects) + axe + executable Python |
+| Code splitting | ❌ one 185 kB gzip chunk | ✅ per-widget chunks; entry ~106 kB gzip |
+| Firebase config | ❌ missing | ✅ `firebase.json` + `.firebaserc` (SPA rewrites + headers) |
+| Docs | ❌ missing | ✅ `BUGS.md`, `TEST_REPORT.md`, `DEPLOYMENT.md`, `CHANGELOG.md`, this file |
+| Light-theme a11y contrast | ❌ W5 labels flagged | ✅ W5 dim scoped to the badge |
+
+### Verified results
+
+- `npm run check` — lint clean, **123 tests**, content lint clean (7 sections /
+  57 terms), **7/7** Python snippets.
+- Playwright — **100 passed / 4 skipped / 0 failed** across `chromium-1280`,
+  `chromium-375`, `firefox-1280`, `webkit-1280`. Full detail in `TEST_REPORT.md`.
+
+### Remaining (non-blocking)
+
+- **Lighthouse budgets** and **live header checks** have not been run — both
+  require a deployed URL (preview or live).
+- **Firefox/WebKit at 375 px** are not in the reduced matrix (Chromium covers
+  375; QA Spec §179 allows a reduced matrix per browser).
+- **GSAP for the W5 timeline** was recorded as an acceptable deviation (W5 uses
+  Motion); see `docs/decisions.md`.
+- **Go-live is blocked** pending human confirmation that the existing
+  `inside-yue2-3b` site content may be replaced (`DEPLOYMENT.md`).

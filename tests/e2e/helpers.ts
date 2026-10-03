@@ -1,5 +1,9 @@
 import { expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import {
+  MOBILE_READING_LINE_FRACTION,
+  MOBILE_STAGE_QUERY,
+} from '../../src/lib/reading-line';
 
 export const SECTIONS = [
   'tokenization',
@@ -22,13 +26,25 @@ export async function focusStage(page: Page, section: string) {
   return widget;
 }
 
+/**
+ * Scrolls a beat onto the app's reading line (viewport centre on desktop, the
+ * area below the 45vh sticky stage on mobile) so the step selector and the
+ * test agree on which beat is active.
+ */
 export async function scrollBeatIntoView(page: Page, section: string, beat: number) {
   await page.evaluate(
-    ([s, b]) => {
+    ([s, b, mobileQuery, fraction]) => {
       const el = document.getElementById(`${s}-beat-${b}`);
-      el?.scrollIntoView({ block: 'center', behavior: 'instant' as ScrollBehavior });
+      if (!el) return;
+      const vh = window.innerHeight;
+      const line = window.matchMedia(mobileQuery).matches ? vh * fraction : vh / 2;
+      const rect = el.getBoundingClientRect();
+      window.scrollTo({
+        top: Math.max(0, window.scrollY + rect.top + rect.height / 2 - line),
+        behavior: 'instant' as ScrollBehavior,
+      });
     },
-    [section, beat] as const
+    [section, beat, MOBILE_STAGE_QUERY, MOBILE_READING_LINE_FRACTION] as const
   );
 }
 

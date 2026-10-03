@@ -139,7 +139,7 @@ export const W5BlockWidget: React.FC<W5Props> = ({ step, reducedMotion }) => {
                       type="button"
                       onClick={() => setSelectedStation(st)}
                       className={`flex flex-col items-center gap-1 group transition-all ${
-                        isActive ? 'scale-110' : 'opacity-70 hover:opacity-100'
+                        isActive ? 'scale-110' : ''
                       }`}
                       title={`Click to inspect ${st.name}`}
                     >
@@ -148,8 +148,8 @@ export const W5BlockWidget: React.FC<W5Props> = ({ step, reducedMotion }) => {
                           isActive
                             ? 'bg-sky-400 text-slate-950 border-white font-bold ring-2 ring-sky-400/50'
                             : isPassed
-                            ? 'bg-emerald-950 border-emerald-600 text-emerald-300'
-                            : 'bg-slate-900 border-slate-700 text-slate-400'
+                            ? 'bg-emerald-950 border-emerald-600 text-emerald-300 opacity-70 group-hover:opacity-100'
+                            : 'bg-slate-900 border-slate-700 text-slate-400 opacity-70 group-hover:opacity-100'
                         }`}
                       >
                         {idx + 1}

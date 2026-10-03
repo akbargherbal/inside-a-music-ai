@@ -13,10 +13,10 @@ Spec) and `genai-visual-explainer-qa-deploy-spec.md` (QA/Deploy Spec).
 
 ## SESSION HANDOFF — where things stand (resume here)
 
-Last worked: hardening pass complete in code; tests mostly green; **nothing
-committed yet** (this README update is part of the first push). Deployment is
-**preview-only** and the live step is **blocked pending a human decision** (see
-below).
+Last worked: all known test failures fixed; **every suite is green across
+Chromium, Firefox and WebKit**. Deployment is **preview-only** and the live step is
+**blocked pending a human decision** (see below). Nothing from this session is
+committed yet.
 
 ### Done and verified
 
@@ -28,13 +28,14 @@ below).
 - **Test tooling**: Vitest 3 + Testing Library + jsdom; Playwright + `@axe-core/playwright`;
   browsers installed. Configs: `vitest.config.ts`, `playwright.config.ts`,
   `tests/setup.ts` (IntersectionObserver mock).
-- **Test results (measured)**:
+- **Test results (measured)** — see `TEST_REPORT.md`:
   - `npm test` — **123 passing** (7 files).
   - `npm run test:py` — **7/7** Python snippets match their recorded outputs.
   - `npm run check:content` — clean ("7 sections, 57 glossary terms").
-  - Playwright **chromium-1280: fully green** (scroll, controls, deep links,
-    backwards, interactive, mobile, a11y **dark and light**).
-  - Playwright **chromium-375: 20/22** — 2 failures, see Open Issues.
+  - Playwright — **100 passed / 4 skipped / 0 failed** across `chromium-1280`,
+    `chromium-375`, `firefox-1280`, `webkit-1280` (scroll, controls, deep links,
+    backwards, interactive, mobile, a11y **dark and light**). The 4 skips are the
+    post-deploy header check, which only runs with `BASE_URL`.
 - **Content correctness fixes** (real YuE2 facts, no invented numbers):
   - W2 drums weight `0.429`; W3 uses all 9 tokens; W4 combined
     `[0.74,0.0,0.0,0.74,0.5,0.5,0.27,0.27]`; W5 `[1.437,-2.437,0.437,0.563]`;
@@ -47,35 +48,30 @@ below).
     `tests/fixtures/golden-sampling.json`.
 - **App hardening**: real error boundary + lazy in-view widget mounts +
   code-splitting (`React.lazy`) in `WidgetStage.tsx`/`App.tsx`; rewritten
-  `useWidgetStep.ts` + `SectionContainer.tsx` (robust nearest-to-centre scroll
-  step selector); deep-link parsing (`src/lib/deep-link.ts`); theme system with
-  light/dark (`.light` accent inversion in `src/index.css`); a11y fixes
-  (focusable scroll regions, touch targets, aria labels); glossary auto-linking
-  and ~15 new terms.
+  `useWidgetStep.ts` + `SectionContainer.tsx`; deep-link parsing
+  (`src/lib/deep-link.ts`); theme system with light/dark (`.light` accent
+  inversion in `src/index.css`); a11y fixes (focusable scroll regions, touch
+  targets, aria labels); glossary auto-linking and ~15 new terms.
+- **Mobile/browser fixes (this session)** — details in `BUGS.md`:
+  - Mobile stage capped at `h-[45vh]` with an internal scroll body, so controls
+    stay reachable and beats stay visible; shared reading line in
+    `src/lib/reading-line.ts`.
+  - Programmatic-scroll lock releases only on real user input (wheel/touch/key),
+    fixing Firefox/WebKit Next/Prev overshoot.
+  - External `hashchange` now scrolls the target section in.
+  - Light-theme W5 station-label contrast fixed.
 - **CI/release**: `.github/workflows/ci.yml`, `.github/workflows/deploy.yml`,
   `.nvmrc` (Node 20).
+- **Deliverables added**: `firebase.json`, `.firebaserc`, `BUGS.md`,
+  `TEST_REPORT.md`, `DEPLOYMENT.md`, `CHANGELOG.md`, and a final `AUDIT.md`.
 
-### Open issues (must fix next session)
+### Open items
 
-1. **Chromium-375 (mobile) — 2 failing e2e tests**:
-   - `tests/e2e/scroll.spec.ts` › "Next/Prev change the step and settle without
-     oscillation" — after a control click, the scroll-driven step selector
-     settles on a stale beat (e.g. expects `0`, gets `6`).
-   - `tests/e2e/interactive.spec.ts` › "W2 token can be moved with the keyboard"
-     — the "Nearest Neighbours" panel is not rendered after jumping to step 6 at
-     375px.
-   These look like viewport-specific settling/rendering issues, not product-wide
-   breakage (1280px is green and scroll→step passes at 375). Root-cause and fix;
-   do **not** weaken the assertions.
-2. **Missing deliverables**: `firebase.json`, `.firebaserc` (SPA rewrites +
-   `x-content-type-options`, `x-frame-options: DENY`, `cache-control: no-cache`
-   for `/index.html`, long-cache for `/assets/**`), and docs `BUGS.md`,
-   `TEST_REPORT.md`, `DEPLOYMENT.md`, `CHANGELOG.md`. `AUDIT.md` needs a final
-   update.
-3. **Not yet run**: Playwright firefox/webkit/mobile projects beyond 375;
-   performance/Lighthouse budget; post-deploy header checks.
-4. **Deployment artifacts**: committed test output dirs were excluded via
-   `.gitignore` (see below).
+1. **Not yet run**: Lighthouse budgets and live post-deploy header checks — both
+   need a deployed URL (see `DEPLOYMENT.md`).
+2. **Cross-browser 375 px**: Firefox/WebKit run at 1280 in the reduced matrix;
+   Chromium covers 375.
+3. **Go-live** remains blocked pending human confirmation (below).
 
 ### Deployment — READ BEFORE GOING LIVE
 
@@ -89,11 +85,10 @@ below).
 - Per the QA/Deploy Spec: a preview channel is safe/non-destructive, but going
   **live over different content is destructive** and must be confirmed by a
   human first.
-- **Do this next**: finish docs + `firebase.json`/`.firebaserc`, then run
-  `npm run deploy:preview` and
+- **Do this next**: run `npm run deploy:preview`, then
   `BASE_URL=<preview-url> npx playwright test tests/e2e/post-deploy.spec.ts`,
   then **STOP and ask** before promoting to live. Exact live command (once
-  confirmed): `npm run deploy`.
+  confirmed): `npm run deploy`. Full runbook: `DEPLOYMENT.md`.
 
 ---
 

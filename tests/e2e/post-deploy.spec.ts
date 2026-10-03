@@ -28,6 +28,8 @@ test.describe('post-deploy verification', () => {
   });
 
   test('security and cache headers are configured', async ({ request }) => {
+    // Hosting headers only exist on Firebase, not on the local `vite preview`.
+    test.skip(!process.env.BASE_URL, 'requires a deployed BASE_URL');
     const index = await request.get('/');
     expect(index.headers()['x-content-type-options']).toBe('nosniff');
     expect(index.headers()['x-frame-options']).toBe('DENY');

@@ -1,39 +1,39 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { clampStep, parseSectionHash } from '../lib/deep-link';
+import { scrollToReadingLine } from '../lib/reading-line';
 
 /**
  * Owns one section's `step`. Step can only change through this hook, so scroll,
  * buttons, scrubber, keyboard and deep links never disagree.
  */
-export function useWidgetStep(sectionId: string, totalSteps: number, reducedMotion = false) {
+export function useWidgetStep(sectionId: string, totalSteps: number, _reducedMotion = false) {
   const [step, setStepState] = useState<number>(0);
   // True while we are scrolling a beat into view on purpose, so the scroll
   // observer does not immediately bounce the step back.
   const isProgrammaticScroll = useRef(false);
-  const lockTime = useRef(0);
-  const isProgrammaticScrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clamp = useCallback((value: number) => clampStep(value, totalSteps), [totalSteps]);
 
   const scrollLock = useCallback(() => {
     isProgrammaticScroll.current = true;
-    lockTime.current = Date.now();
-    // Fallback so the lock can never stick forever if no scroll/input arrives.
-    if (isProgrammaticScrollTimer.current) clearTimeout(isProgrammaticScrollTimer.current);
-    isProgrammaticScrollTimer.current = setTimeout(() => {
-      isProgrammaticScroll.current = false;
-    }, 4000);
   }, []);
 
   const scrollToBeat = useCallback(
     (bounded: number) => {
       const beat = document.getElementById(`${sectionId}-beat-${bounded}`);
-      const el = beat ?? document.getElementById(sectionId);
-      if (el) {
+      if (beat) {
         scrollLock();
         // Instant, not smooth: a long smooth scroll outlives the guard and the
-        // observer would then latch onto whatever beat is mid-flight.
-        el.scrollIntoView({ behavior: 'auto', block: 'center' });
+        // observer would then latch onto whatever beat is mid-flight. The beat
+        // lands on the reading line so the scroll observer agrees with us on
+        // both desktop (centre) and mobile (below the sticky stage).
+        scrollToReadingLine(beat);
+        return;
+      }
+      const el = document.getElementById(sectionId);
+      if (el) {
+        scrollLock();
+        el.scrollIntoView({ behavior: 'auto', block: 'start' });
       }
     },
     [sectionId, scrollLock]
@@ -77,31 +77,33 @@ export function useWidgetStep(sectionId: string, totalSteps: number, reducedMoti
     }
     applyHash(true);
     function onHashChange() {
-      applyHash(false);
+      // External hash changes (address bar, links, navigations) should bring
+      // the section into view; internal step changes use replaceState and do
+      // not fire hashchange, so this cannot loop.
+      applyHash(true);
     }
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, [sectionId, clamp, scrollToBeat]);
 
-  // Release the programmatic-scroll lock only on real user scroll intent. A
-  // `scroll` event that lands long after our own instant scroll counts as the
-  // user; wheel/touch always do. This stops a late IntersectionObserver
-  // delivery from yanking the step to a stale beat after a button press.
+  // Release the programmatic-scroll lock only on genuine user intent (wheel,
+  // touch, keyboard). We deliberately do NOT release on bare `scroll` events,
+  // and there is no timeout: automated/assistive scrolling (e.g. centring a
+  // button before a click, or browser scroll restoration) also fires `scroll`,
+  // and treating it as the user let the observer yank the step to a stale beat
+  // before the click's own handler ran. A real user gesture always follows with
+  // ordinary scroll events that re-enable scroll-driven stepping.
   useEffect(() => {
     const release = () => {
       isProgrammaticScroll.current = false;
     };
-    const onScroll = () => {
-      if (isProgrammaticScroll.current && Date.now() - lockTime.current > 250) release();
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('wheel', release, { passive: true });
     window.addEventListener('touchstart', release, { passive: true });
+    window.addEventListener('keydown', release);
     return () => {
-      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('wheel', release);
       window.removeEventListener('touchstart', release);
-      if (isProgrammaticScrollTimer.current) clearTimeout(isProgrammaticScrollTimer.current);
+      window.removeEventListener('keydown', release);
     };
   }, []);
 

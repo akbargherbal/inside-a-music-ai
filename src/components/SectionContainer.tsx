@@ -7,6 +7,7 @@ import { PythonCorner } from './PythonCorner';
 import { Quiz } from './Quiz';
 import { Term } from './Term';
 import { GlossaryText } from './GlossaryText';
+import { getReadingLineY } from '../lib/reading-line';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 
 interface SectionContainerProps {
@@ -33,6 +34,7 @@ export const SectionContainer: React.FC<SectionContainerProps> = ({
   children,
 }) => {
   const containerRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const beatRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Drive the step from scroll position by choosing the beat whose centre is
@@ -43,13 +45,13 @@ export const SectionContainer: React.FC<SectionContainerProps> = ({
     let frame = 0;
     const measure = () => {
       frame = 0;
-      const centre = window.innerHeight / 2;
+      const line = getReadingLineY();
       let bestIndex = -1;
       let bestDistance = Infinity;
       beatRefs.current.forEach((el, idx) => {
         if (!el) return;
         const rect = el.getBoundingClientRect();
-        const distance = Math.abs(rect.top + rect.height / 2 - centre);
+        const distance = Math.abs(rect.top + rect.height / 2 - line);
         if (distance < bestDistance) {
           bestDistance = distance;
           bestIndex = idx;
@@ -166,8 +168,14 @@ export const SectionContainer: React.FC<SectionContainerProps> = ({
           })}
         </div>
 
-        {/* Right Column: Sticky Widget Stage */}
-        <div className="lg:col-span-7 sticky top-16 z-20 order-1 lg:order-2">
+        {/* Right Column: Sticky Widget Stage. On mobile it is capped at ~45vh
+            so its controls stay on screen and the active beat's text remains
+            visible beneath it (Build Spec §150, QA Spec "Mobile sticky"). */}
+        <div
+          id={`${section.id}-stage`}
+          ref={stageRef}
+          className="lg:col-span-7 sticky top-16 z-20 order-1 lg:order-2 h-[45vh] lg:h-auto"
+        >
           <WidgetStage
             id={section.id}
             title={section.title}

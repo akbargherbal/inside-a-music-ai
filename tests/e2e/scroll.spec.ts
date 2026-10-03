@@ -3,6 +3,8 @@ import { SECTIONS, focusStage, scrollBeatIntoView } from './helpers';
 
 test.describe('scroll and controls', () => {
   test('scrolling each beat advances the widget step', async ({ page }) => {
+    // 7 sections x 3 beats; WebKit needs well over the default 45 s.
+    test.setTimeout(120_000);
     await page.goto('/');
     for (const section of SECTIONS) {
       const widget = page.getByTestId(`widget-${section}`);
