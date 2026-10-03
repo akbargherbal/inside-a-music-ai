@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "id": "embeddings-illustrative-01",
+    "dataKind": "illustrative",
+    "badgeText": "Illustrative — hand-crafted 8-dimensional vectors with projected 2D coordinates.",
+    "source": "authored by the build agent",
+    "model": null,
+    "generatedBy": null
+  },
+  "items": [
+    {
+      "id": 204,
+      "token": "guitar",
+      "vector": [0.85, 0.42, -0.15, 0.74, 0.12, -0.65, 0.88, 0.35],
+      "coords2D": [-65, 45],
+      "category": "instrument"
+    },
+    {
+      "id": 210,
+      "token": "piano",
+      "vector": [0.78, 0.49, -0.10, 0.69, 0.20, -0.58, 0.82, 0.40],
+      "coords2D": [-55, 60],
+      "category": "instrument"
+    },
+    {
+      "id": 211,
+      "token": "drums",
+      "vector": [0.65, 0.32, 0.25, 0.82, -0.10, -0.70, 0.75, 0.20],
+      "coords2D": [-75, 30],
+      "category": "instrument"
+    },
+    {
+      "id": 212,
+      "token": "bass",
+      "vector": [0.72, 0.38, 0.18, 0.77, 0.05, -0.62, 0.79, 0.28],
+      "coords2D": [-70, 50],
+      "category": "instrument"
+    },
+    {
+      "id": 213,
+      "token": "verse",
+      "vector": [-0.30, 0.75, 0.62, -0.45, 0.85, 0.32, -0.20, 0.65],
+      "coords2D": [50, 55],
+      "category": "structure"
+    },
+    {
+      "id": 214,
+      "token": "chorus",
+      "vector": [-0.25, 0.80, 0.68, -0.40, 0.88, 0.35, -0.15, 0.70],
+      "coords2D": [60, 65],
+      "category": "structure"
+    },
+    {
+      "id": 215,
+      "token": "bridge",
+      "vector": [-0.35, 0.70, 0.58, -0.48, 0.82, 0.28, -0.25, 0.60],
+      "coords2D": [40, 48],
+      "category": "structure"
+    },
+    {
+      "id": 216,
+      "token": "sad",
+      "vector": [-0.15, 0.85, -0.72, -0.25, -0.55, 0.45, -0.60, -0.30],
+      "coords2D": [55, -50],
+      "category": "emotion"
+    },
+    {
+      "id": 217,
+      "token": "happy",
+      "vector": [0.45, -0.75, 0.65, 0.30, 0.60, -0.40, 0.55, 0.40],
+      "coords2D": [70, -35],
+      "category": "emotion"
+    },
+    {
+      "id": 105,
+      "token": "kitchen",
+      "vector": [-0.62, -0.75, 0.88, -0.42, -0.35, 0.20, -0.50, -0.80],
+      "coords2D": [-50, -65],
+      "category": "kitchen"
+    },
+    {
+      "id": 106,
+      "token": "floor",
+      "vector": [-0.58, -0.70, 0.82, -0.45, -0.30, 0.15, -0.48, -0.75],
+      "coords2D": [-40, -55],
+      "category": "kitchen"
+    }
+  ]
+}

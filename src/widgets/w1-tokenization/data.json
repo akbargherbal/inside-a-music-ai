@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "id": "tokenization-illustrative-01",
+    "dataKind": "illustrative",
+    "badgeText": "Illustrative — toy vocabulary demonstrating greedy longest-match tokenization.",
+    "source": "authored by the build agent",
+    "model": null,
+    "generatedBy": null
+  },
+  "sampleText": "Sunlight on the kitchen floor",
+  "sampleAbc": "X:1 M:4/4 L:1/8 K:C |CDEF G2E2|",
+  "vocab": {
+    "Sun": 101,
+    "light": 102,
+    " on": 103,
+    " the": 104,
+    " kitchen": 105,
+    " floor": 106,
+    "X:1": 501,
+    "M:4/4": 502,
+    "L:1/8": 503,
+    "K:C": 504,
+    "|C": 505,
+    "D": 506,
+    "E": 507,
+    "F": 508,
+    "G2": 509,
+    "E2|": 510
+  }
+}

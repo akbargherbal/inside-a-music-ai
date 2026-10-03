@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "id": "loop-illustrative-01",
+    "dataKind": "illustrative",
+    "badgeText": "Illustrative — deterministic autoregressive rollout with inspectable decision history.",
+    "source": "authored by the build agent",
+    "model": null,
+    "generatedBy": null
+  },
+  "prompt": ["Sunlight", "on", "the"],
+  "scriptedSteps": [
+    {
+      "stepNumber": 1,
+      "inputContext": ["Sunlight", "on", "the"],
+      "sampledToken": "kitchen",
+      "probabilities": [
+        { "token": "kitchen", "prob": 0.58 },
+        { "token": "wooden", "prob": 0.22 },
+        { "token": "empty", "prob": 0.14 },
+        { "token": "morning", "prob": 0.06 }
+      ]
+    },
+    {
+      "stepNumber": 2,
+      "inputContext": ["Sunlight", "on", "the", "kitchen"],
+      "sampledToken": "floor",
+      "probabilities": [
+        { "token": "floor", "prob": 0.64 },
+        { "token": "table", "prob": 0.24 },
+        { "token": "sink", "prob": 0.08 },
+        { "token": "window", "prob": 0.04 }
+      ]
+    },
+    {
+      "stepNumber": 3,
+      "inputContext": ["Sunlight", "on", "the", "kitchen", "floor"],
+      "sampledToken": "glows",
+      "probabilities": [
+        { "token": "glows", "prob": 0.52 },
+        { "token": "creaks", "prob": 0.28 },
+        { "token": "shines", "prob": 0.15 },
+        { "token": "cools", "prob": 0.05 }
+      ]
+    },
+    {
+      "stepNumber": 4,
+      "inputContext": ["Sunlight", "on", "the", "kitchen", "floor", "glows"],
+      "sampledToken": "<end>",
+      "isStopToken": true,
+      "probabilities": [
+        { "token": "<end>", "prob": 0.72 },
+        { "token": "softly", "prob": 0.16 },
+        { "token": "and", "prob": 0.08 },
+        { "token": "today", "prob": 0.04 }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "id": "transformer-block-illustrative-01",
+    "dataKind": "illustrative",
+    "badgeText": "Illustrative — structural schematic of standard transformer layer operations.",
+    "source": "authored by the build agent",
+    "model": null,
+    "generatedBy": null
+  },
+  "stations": [
+    {
+      "id": "input",
+      "name": "Token Input",
+      "stepIndex": 0,
+      "shortDesc": "Token chips enter the line",
+      "inputShape": "9 tokens (raw text)",
+      "outputShape": "9 integer IDs",
+      "analogyStation": "Loading raw materials onto conveyor belt",
+      "details": "Converts plain text or ABC score symbols into integer IDs using the vocabulary table from Section 1."
+    },
+    {
+      "id": "embedding",
+      "name": "Embedding Table",
+      "stepIndex": 1,
+      "shortDesc": "Look up coordinate vectors",
+      "inputShape": "9 integer IDs",
+      "outputShape": "9 tokens × 8 numbers",
+      "analogyStation": "Looking up parts in the master engineering catalogue",
+      "details": "Replaces each integer ID with an 8-dimensional meaning vector from Section 2."
+    },
+    {
+      "id": "position",
+      "name": "Position Stamp",
+      "stepIndex": 2,
+      "shortDesc": "Stamp order into vectors",
+      "inputShape": "9 tokens × 8 numbers",
+      "outputShape": "9 tokens × 8 numbers",
+      "analogyStation": "Stamping sequence numbers onto each cardboard box",
+      "details": "Since self-attention treats tokens as an unordered set, we add positional numbers so the model distinguishes 'dog bites man' from 'man bites dog'."
+    },
+    {
+      "id": "attention",
+      "name": "Multi-Head Attention",
+      "stepIndex": 3,
+      "shortDesc": "Tokens exchange context",
+      "inputShape": "9 tokens × 8 numbers",
+      "outputShape": "9 tokens × 8 numbers",
+      "analogyStation": "Meeting room consultation + adding notes to original folder",
+      "details": "Tokens communicate across the sequence using Query, Key, and Value arithmetic from Sections 3 and 4. The result is added directly back onto the belt via a residual bypass shortcut."
+    },
+    {
+      "id": "norm",
+      "name": "Layer Normalisation",
+      "stepIndex": 4,
+      "shortDesc": "Tidy up number scales",
+      "inputShape": "9 tokens × 8 numbers",
+      "outputShape": "9 tokens × 8 numbers",
+      "analogyStation": "Audio volume limiter keeping levels balanced",
+      "details": "Scales numbers back to a standardized range (mean 0, variance 1) to keep subsequent layers mathematically stable."
+    },
+    {
+      "id": "ffn",
+      "name": "Feed-Forward Network",
+      "stepIndex": 5,
+      "shortDesc": "Each token thinks alone",
+      "inputShape": "9 tokens × 8 numbers",
+      "outputShape": "9 tokens × 8 numbers",
+      "analogyStation": "Individual worker desk for private document processing",
+      "details": "Two neural network layers applied to each token vector separately without sharing information between tokens."
+    },
+    {
+      "id": "stack",
+      "name": "Stacked Layers",
+      "stepIndex": 6,
+      "shortDesc": "Repeat line dozens of times",
+      "inputShape": "Layer 1 output",
+      "outputShape": "Layer N output",
+      "analogyStation": "Multi-floor factory assembly line",
+      "details": "Stacking many blocks lets early layers catch local grammar and rhymes, while deeper layers track global song structures and themes."
+    },
+    {
+      "id": "output",
+      "name": "Logits Projection",
+      "stepIndex": 7,
+      "shortDesc": "Compute raw scores",
+      "inputShape": "Last token vector (8 numbers)",
+      "outputShape": "Scores for all vocabulary tokens",
+      "analogyStation": "Final tally counter before voting",
+      "details": "Multiplies the final token vector against the full vocabulary matrix to produce unnormalized logits for Section 6."
+    }
+  ]
+}

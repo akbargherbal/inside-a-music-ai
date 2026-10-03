@@ -1,0 +1,6 @@
+{
+  "name": "Inside a Music AI",
+  "description": "An interactive, scroll-driven animated explainer of how generative music AI works, built around the open-source YuE2-3B model.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

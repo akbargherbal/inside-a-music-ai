@@ -1,0 +1,33 @@
+# Build Progress & Milestone Tracker
+
+### Milestone Status
+- [x] **M0 – Research & Plan**:
+  - Model card and arXiv:2609.33757 reviewed.
+  - `src/content/facts.ts` created with typed, verified YuE2 facts.
+  - `docs/research-notes.md` and `docs/decisions.md` documented.
+- [x] **M1 – Skeleton**:
+  - Vite + React + TypeScript with Tailwind CSS.
+  - Visual language definitions in `src/app/visual-language.ts`.
+  - Core components: `TopBar`, `ProgressRail`, `Hero`, `SectionContainer`, `WidgetStage`, `StepControls`, `DataBadge`, `Term`, `AnalogyBox`, `PythonCorner`, `YuE2Link`, `Quiz`, `GlossaryModal`, `Footer`, `Epilogue`.
+  - Scrollytelling coordinated with `useWidgetStep` hook, deep linking, and keyboard shortcuts.
+- [x] **M2 – Math Core**:
+  - Pure TS `src/lib/ml/` math core (`softmax`, `dot`, `attention`, `sampling`, `tokenizer`).
+  - Deterministic Mulberry32 PRNG in `src/lib/rng.ts`.
+  - Golden fixtures cross-checked between TS and Python (`tests/fixtures/`).
+- [x] **M3 – Widgets W1–W4**:
+  - W1 Tokenization (text, ABC music notation, audio waveform frames, interactive text input).
+  - W2 Embeddings (8-dim vector bars, similarity, interactive 2D concept map with distance lines).
+  - W3 Self-Attention (Query, Key, Value arithmetic, dot product scores, live softmax, winner "guitar", 9x9 heatmap, causal mask).
+  - W4 Multi-Head Attention (4 specialized heads, cross-head row highlighting, concatenation).
+- [x] **M4 – Widgets W5–W7 + Wrap-up**:
+  - W5 Transformer Block (assembly line conveyor belt, residual bypass shortcut, normalisation, feed-forward, block stacking, logits projection, shape inspector).
+  - W6 Sampling (logits to probabilities, temperature slider, top-k, top-p, seeded deterministic dice roll, CFG guidance slider).
+  - W7 Generation Loop (autoregressive rollout, timeline history inspection, stop token, YuE2 AR vs NAR flow-matching comparison).
+  - Glossary with all seed terms defined with analogies and searchable modal.
+  - 2-question quizzes per section with immediate feedback and explanation.
+  - License and attribution clearly stated (CC BY-NC 4.0, M-A-P).
+- [x] **M5 – Polish & Verification**:
+  - Rubber-duck comprehension verification in `tests/comprehension.md`.
+  - Self-review checklist in `REVIEW.md`.
+  - 153 unit tests passing in `scripts/run-tests.ts`.
+  - Type checking (`tsc --noEmit`) and Vite production build passed with 0 errors.

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "id": "sampling-illustrative-01",
+    "dataKind": "illustrative",
+    "badgeText": "Illustrative — 8 candidates with real live temperature, top-k/p, and seeded RNG sampling.",
+    "source": "authored by the build agent",
+    "model": null,
+    "generatedBy": null
+  },
+  "contextPhrase": "Sunlight on the kitchen ___",
+  "candidates": [
+    { "id": 106, "token": "floor", "logit": 3.2, "uncondLogit": 1.5 },
+    { "id": 107, "token": "table", "logit": 2.5, "uncondLogit": 1.8 },
+    { "id": 108, "token": "window", "logit": 1.8, "uncondLogit": 1.2 },
+    { "id": 102, "token": "light", "logit": 1.2, "uncondLogit": 1.4 },
+    { "id": 109, "token": "wall", "logit": 0.4, "uncondLogit": 0.8 },
+    { "id": 110, "token": "sink", "logit": -0.2, "uncondLogit": 0.2 },
+    { "id": 111, "token": "dream", "logit": -1.5, "uncondLogit": 0.5 },
+    { "id": 112, "token": "purple", "logit": -2.8, "uncondLogit": -0.4 }
+  ]
+}
