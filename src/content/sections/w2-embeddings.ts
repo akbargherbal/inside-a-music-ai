@@ -75,7 +75,7 @@ def find_nearest(target_word, table, top_n=2):
     return distances[:top_n]
 
 print("Nearest to 'guitar':", find_nearest("guitar", embeddings))`,
-      expectedOutput: `Nearest to 'guitar': [('piano', 0.117), ('drums', 0.418)]`,
+      expectedOutput: `Nearest to 'guitar': [('piano', 0.118), ('drums', 0.429)]`,
     },
   ],
   recap: [

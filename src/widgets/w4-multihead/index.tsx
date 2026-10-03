@@ -78,7 +78,7 @@ export const W4MultiHeadWidget: React.FC<W4Props> = ({ step, reducedMotion }) =>
                     <div className="w-full flex items-center justify-between mb-1.5 px-1">
                       <span
                         className="text-[10px] font-mono font-semibold truncate"
-                        style={{ color: head.color }}
+                        style={{ color: `var(--w4-head-${head.id}, ${head.color})` }}
                       >
                         {head.name}
                       </span>
@@ -143,7 +143,7 @@ export const W4MultiHeadWidget: React.FC<W4Props> = ({ step, reducedMotion }) =>
                 >
                   <span
                     className="text-[10px] font-mono font-bold mb-1"
-                    style={{ color: h.color }}
+                    style={{ color: `var(--w4-head-${h.headId}, ${h.color})` }}
                   >
                     Head {h.headId + 1}
                   </span>

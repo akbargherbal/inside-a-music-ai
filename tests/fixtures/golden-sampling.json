@@ -1,10 +1,38 @@
 {
-  "description": "Golden cross-check fixtures for temperature, top-k, and deterministic sampling",
-  "candidates": ["floor", "table", "window", "light", "wall", "sink", "dream", "purple"],
-  "logits": [3.2, 2.5, 1.8, 1.2, 0.4, -0.2, -1.5, -2.8],
+  "description": "Golden cross-check for temperature, top-k, and deterministic sampling (W6, seed=7)",
+  "candidates": [
+    "floor",
+    "table",
+    "window",
+    "light",
+    "wall",
+    "sink",
+    "dream",
+    "purple"
+  ],
+  "logits": [
+    3.2,
+    2.5,
+    1.8,
+    1.2,
+    0.4,
+    -0.2,
+    -1.5,
+    -2.8
+  ],
   "temperature": 0.8,
   "topK": 4,
   "seed": 7,
+  "expectedProbs": [
+    0.581211,
+    0.242285,
+    0.100999,
+    0.047709,
+    0.017551,
+    0.008291,
+    0.001633,
+    0.000321
+  ],
   "expectedSampledToken": "floor",
-  "expectedSampledProb": 0.581
+  "expectedSampledProb": 0.581211
 }

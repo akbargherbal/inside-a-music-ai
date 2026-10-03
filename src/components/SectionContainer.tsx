@@ -6,12 +6,14 @@ import { YuE2Link } from './YuE2Link';
 import { PythonCorner } from './PythonCorner';
 import { Quiz } from './Quiz';
 import { Term } from './Term';
+import { GlossaryText } from './GlossaryText';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 
 interface SectionContainerProps {
   section: ConceptSection;
   step: number;
   onStepChange: (step: number) => void;
+  onStepFromScroll: (step: number) => void;
   reducedMotion: boolean;
   onOpenGlossary: (slug?: string) => void;
   nextSectionId?: string;
@@ -23,6 +25,7 @@ export const SectionContainer: React.FC<SectionContainerProps> = ({
   section,
   step,
   onStepChange,
+  onStepFromScroll,
   reducedMotion,
   onOpenGlossary,
   nextSectionId,
@@ -32,37 +35,41 @@ export const SectionContainer: React.FC<SectionContainerProps> = ({
   const containerRef = useRef<HTMLElement>(null);
   const beatRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // IntersectionObserver to observe text beats while scrolling
+  // Drive the step from scroll position by choosing the beat whose centre is
+  // nearest the viewport centre. This is robust on mobile (where a sticky
+  // stage can sit over the beats) and avoids the IntersectionObserver band
+  // ambiguity that made the step jump to a stale beat.
   useEffect(() => {
-    if (reducedMotion) return;
-
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const beatIndex = parseInt(
-              entry.target.getAttribute('data-beat-index') || '0',
-              10
-            );
-            if (!isNaN(beatIndex) && beatIndex !== step) {
-              onStepChange(beatIndex);
-            }
-          }
-        });
-      },
-      {
-        root: null,
-        rootMargin: '-30% 0px -40% 0px',
-        threshold: 0.2,
-      }
-    );
-
-    beatRefs.current.forEach(el => {
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [section.steps.length, onStepChange, step, reducedMotion]);
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      const centre = window.innerHeight / 2;
+      let bestIndex = -1;
+      let bestDistance = Infinity;
+      beatRefs.current.forEach((el, idx) => {
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const distance = Math.abs(rect.top + rect.height / 2 - centre);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestIndex = idx;
+        }
+      });
+      if (bestIndex >= 0) onStepFromScroll(bestIndex);
+    };
+    const schedule = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(measure);
+    };
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    schedule();
+    return () => {
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [onStepFromScroll]);
 
   const currentStep = section.steps[step] || section.steps[0];
   const stepLabels = section.steps.map((_, i) => `Step ${i + 1}`);
@@ -116,7 +123,7 @@ export const SectionContainer: React.FC<SectionContainerProps> = ({
                 className={`p-5 rounded-2xl border transition-all cursor-pointer ${
                   isActive
                     ? 'bg-slate-900 border-sky-500/80 shadow-lg shadow-sky-500/10'
-                    : 'bg-slate-950/40 border-slate-800/60 opacity-65 hover:opacity-90'
+                    : 'bg-slate-950/40 border-slate-800/60 hover:bg-slate-900/50'
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
@@ -135,7 +142,11 @@ export const SectionContainer: React.FC<SectionContainerProps> = ({
                 </div>
 
                 <p className="text-sm sm:text-base text-slate-200 leading-relaxed">
-                  {s.caption}
+                  <GlossaryText
+                    text={s.caption}
+                    terms={s.newTerms}
+                    onOpenGlossary={onOpenGlossary}
+                  />
                 </p>
 
                 {s.newTerms && s.newTerms.length > 0 && (

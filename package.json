@@ -1,22 +1,34 @@
 {
-  "name": "react-example",
+  "name": "inside-a-music-ai",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A scroll-driven, animated explainer of how generative AI works, built around the open-source YuE2-3B music model.",
   "type": "module",
+  "engines": {
+    "node": ">=20 <21"
+  },
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
-    "preview": "vite preview",
-    "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "preview": "vite preview --port=4173 --strictPort",
+    "clean": "rm -rf dist server.js coverage playwright-report test-results",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:py": "tsx scripts/run-python-snippets.ts",
+    "test:e2e": "playwright test",
+    "test:a11y": "playwright test tests/e2e/a11y.spec.ts",
+    "check:content": "tsx scripts/check-content.ts",
+    "check": "npm run lint && npm run test && npm run check:content && npm run test:py",
+    "deploy:preview": "npm run build && firebase hosting:channel:deploy preview --expires 7d",
+    "deploy": "npm run build && firebase deploy --only hosting"
   },
   "dependencies": {
-    "@google/genai": "^2.4.0",
     "@gsap/react": "^2.1.2",
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-react": "^6.1.1",
-    "dotenv": "^17.2.3",
-    "express": "^4.21.2",
     "gsap": "^3.15.0",
     "lucide-react": "^0.546.0",
     "motion": "^12.23.24",
@@ -26,14 +38,22 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "@types/node": "^22.14.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@vitest/coverage-v8": "^3.2.7",
     "autoprefixer": "^10.4.21",
-    "esbuild": "^0.25.0",
+    "axe-core": "^4.13.0",
+    "jsdom": "^29.1.1",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.21.0",
     "typescript": "^7.0.2",
-    "@types/express": "^4.17.21"
+    "vitest": "^3.2.7"
   }
 }

@@ -1,1 +1,96 @@
 @import "tailwindcss";
+
+/*
+ * Extra slate shades used by the design system. Defining them as theme tokens
+ * means `bg-slate-850` / `border-slate-750` actually produce CSS (previously
+ * these class names were silently dropped).
+ */
+@theme {
+  --color-slate-750: #293548;
+  --color-slate-850: #1b2536;
+  /* Lift the mid greys a little so small hint text meets WCAG AA on the
+     near-black page background. */
+  --color-slate-400: #a7b4c8;
+  --color-slate-500: #8a98ad;
+  --color-slate-600: #71809a;
+}
+
+/*
+ * Light theme. Tailwind v4 emits colours as CSS variables, so remapping the
+ * slate scale (and white, which is only ever used for text here) flips every
+ * existing utility to a light palette without rewriting the components.
+ */
+.light {
+  --color-slate-950: #f8fafc;
+  --color-slate-900: #ffffff;
+  --color-slate-850: #eef2f7;
+  --color-slate-800: #e2e8f0;
+  --color-slate-750: #d8e0ea;
+  --color-slate-700: #b6c2d1;
+  --color-slate-600: #64748b;
+  --color-slate-500: #55637a;
+  --color-slate-400: #3f4c60;
+  --color-slate-300: #334155;
+  --color-slate-200: #1e293b;
+  --color-slate-100: #0f172a;
+  --color-white: #0f172a;
+
+  /* Accent inversion: dark saturated text/buttons, pale tinted panels. */
+  --color-sky-950: #e0f2fe;
+  --color-sky-900: #dbeafe;
+  --color-sky-850: #dbeafe;
+  --color-sky-800: #bfdbfe;
+  --color-sky-700: #0369a1;
+  --color-sky-600: #0284c7;
+  --color-sky-500: #0369a1;
+  --color-sky-400: #0369a1;
+  --color-sky-300: #075985;
+  --color-sky-200: #0c4a6e;
+
+  --color-emerald-950: #d1fae5;
+  --color-emerald-900: #a7f3d0;
+  --color-emerald-800: #6ee7b7;
+  --color-emerald-700: #047857;
+  --color-emerald-600: #047857;
+  --color-emerald-500: #047857;
+  --color-emerald-400: #047857;
+  --color-emerald-300: #065f46;
+  --color-emerald-200: #064e3b;
+
+  --color-amber-950: #fef3c7;
+  --color-amber-900: #fde68a;
+  --color-amber-800: #fcd34d;
+  --color-amber-700: #b45309;
+  --color-amber-500: #b45309;
+  --color-amber-400: #b45309;
+  --color-amber-300: #92400e;
+  --color-amber-200: #78350f;
+
+  --color-rose-950: #ffe4e6;
+  --color-rose-900: #fecdd3;
+  --color-rose-700: #be123c;
+  --color-rose-600: #be123c;
+  --color-rose-400: #be123c;
+  --color-rose-300: #9f1239;
+  --color-rose-200: #881337;
+
+  --color-purple-950: #f3e8ff;
+  --color-purple-800: #c4b5fd;
+  --color-purple-500: #7e22ce;
+  --color-purple-300: #6b21a8;
+  --color-purple-200: #581c87;
+
+  --color-cyan-500: #0e7490;
+  --color-cyan-300: #155e75;
+  --color-teal-300: #0f766e;
+
+  /* W4 per-head colours come from data.json as inline styles. */
+  --w4-head-0: #0369a1;
+  --w4-head-1: #6b21a8;
+  --w4-head-2: #b45309;
+  --w4-head-3: #047857;
+}
+
+.light body {
+  background-color: #f8fafc;
+}

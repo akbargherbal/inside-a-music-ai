@@ -67,7 +67,7 @@ transitions = {
     "creaks":  ["<end>"],
 }
 
-def generate_song_line(prompt=["Sunlight", "on", "the"], seed=42):
+def generate_song_line(prompt=["Sunlight", "on", "the"], seed=2):
     rng = random.Random(seed)
     tokens = list(prompt)
     
@@ -79,38 +79,33 @@ def generate_song_line(prompt=["Sunlight", "on", "the"], seed=42):
         
     return " ".join(tokens[:-1]) # Strip <end>
 
-result = generate_song_line(seed=42)
+result = generate_song_line(seed=2)
 print("Generated line:", result)`,
       expectedOutput: `Generated line: Sunlight on the kitchen floor glows`,
     },
     {
-      title: 'YuE2 Official Pipeline Inference Usage (Hugging Face)',
+      title: 'YuE2 Official Pipeline Usage (verbatim from the model card)',
       file: 'yue2_official_inference.py',
       tag: 'needs-gpu',
-      explanation: 'Official pipeline usage from the YuE2-3B model card. Requires Linux, Python 3.10+, and a 24 GB NVIDIA GPU:',
-      code: `# Requires: Linux, 24GB NVIDIA GPU, torch, transformers
+      explanation: 'Copied verbatim from the YuE2-3B model card (Hugging Face). Requires Linux, Python 3.10+, and a 24 GB NVIDIA GPU — it is shown for reference only and is never executed here:',
+      code: `# Requires: Linux, 24GB NVIDIA GPU
+# Source: https://huggingface.co/m-a-p/YuE2-3B
+from pathlib import Path
 from yue2 import YuE2Pipeline
-import torch
 
-# Load the official model weights
-pipe = YuE2Pipeline.from_pretrained(
-    "m-a-p/YuE2-3B",
-    torch_dtype=torch.bfloat16,
-    device_map="cuda"
-)
+pipe = YuE2Pipeline.from_pretrained("m-a-p/YuE2-3B", device="cuda")
 
-# Generate a complete song from lyrics and style description
-audio_tensor = pipe(
-    prompt="Indie pop, warm female vocal, acoustic guitar, soft drums",
-    lyrics="Sunlight on the kitchen floor\\nCoffee brewing in the morning light",
-    cot="full",        # CoT: generate melody + chords in ABC notation first
-    cfg_scale=4.5,     # Classifier-Free Guidance strength
-    seed=42,           # Deterministic reproducible seed
-)
+import json
+from huggingface_hub import hf_hub_download
 
-# Save to 48 kHz stereo WAV file
-pipe.save_audio(audio_tensor, "output_song.wav")
-print("Song generated at 48 kHz stereo!")`,
+repo = "m-a-p/YuE2-3B"
+prompt_path = hf_hub_download(repo, "examples/tonight-awake.json")
+demo = json.loads(Path(prompt_path).read_text(encoding="utf-8"))
+style, lyrics = demo["style"], demo["lyrics"]
+
+song = pipe(style=style, lyrics=lyrics, cot="full", seed=demo["seed"])
+song.save("song.flac")
+song.save_artifacts("outputs/song")  # ABC, tokens, latents, audio and settings`,
     },
   ],
   recap: [

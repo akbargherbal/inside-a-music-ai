@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink, BookOpen, AlertCircle, Award } from 'lucide-react';
+import { ExternalLink, AlertCircle, Award } from 'lucide-react';
 
 export const Epilogue: React.FC = () => {
   return (

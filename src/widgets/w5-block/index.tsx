@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import rawData from './data.json';
 import { W5DataSchema, type W5Data, type Station } from './schema';
@@ -21,6 +21,16 @@ export const W5BlockWidget: React.FC<W5Props> = ({ step, reducedMotion }) => {
     showShapes,
     selectedStationId: selectedStation?.id,
   });
+
+  // Station popover closes with Escape (keyboard operability).
+  useEffect(() => {
+    if (!selectedStation) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedStation(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selectedStation]);
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-4 py-2">
@@ -49,7 +59,7 @@ export const W5BlockWidget: React.FC<W5Props> = ({ step, reducedMotion }) => {
         {scene.isStackView ? (
           <div className="w-full max-w-sm flex flex-col items-center gap-2">
             <div className="text-xs font-mono text-slate-300 font-semibold mb-1">
-              Stack of 24 to 32 Transformer Blocks
+              Stack of Many Transformer Blocks
             </div>
             <div className="w-full space-y-1.5">
               {[
@@ -85,7 +95,7 @@ export const W5BlockWidget: React.FC<W5Props> = ({ step, reducedMotion }) => {
                 Vector for final token [8 numbers] × Master Vocab Matrix
               </span>
               <span className="text-sm sm:text-base font-bold text-emerald-400 block my-1">
-                = Unnormalized Logits for all 32,000+ Tokens!
+                = Unnormalized Logits for the Whole Vocabulary
               </span>
               <span className="text-xs text-slate-400 block mt-2 font-sans">
                 Next: Section 6 turns these raw scores into probabilities for the dice roll.
@@ -209,7 +219,8 @@ export const W5BlockWidget: React.FC<W5Props> = ({ step, reducedMotion }) => {
               <button
                 type="button"
                 onClick={() => setSelectedStation(null)}
-                className="text-slate-400 hover:text-white"
+                aria-label="Close station details"
+                className="p-2 -m-1 text-slate-400 hover:text-white rounded focus:outline-none focus:ring-1 focus:ring-sky-400"
               >
                 <X className="w-4 h-4" />
               </button>

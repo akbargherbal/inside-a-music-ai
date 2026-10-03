@@ -1,57 +1,109 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { clampStep, parseSectionHash } from '../lib/deep-link';
 
-export function useWidgetStep(sectionId: string, totalSteps: number) {
-  const [step, setStep] = useState<number>(0);
+/**
+ * Owns one section's `step`. Step can only change through this hook, so scroll,
+ * buttons, scrubber, keyboard and deep links never disagree.
+ */
+export function useWidgetStep(sectionId: string, totalSteps: number, reducedMotion = false) {
+  const [step, setStepState] = useState<number>(0);
+  // True while we are scrolling a beat into view on purpose, so the scroll
+  // observer does not immediately bounce the step back.
+  const isProgrammaticScroll = useRef(false);
+  const lockTime = useRef(0);
+  const isProgrammaticScrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Check URL hash on initial mount e.g. #attention?step=3
-  useEffect(() => {
-    function parseHash() {
-      const hash = window.location.hash.slice(1);
-      if (!hash) return;
-      const [hashSection, query] = hash.split('?');
-      if (hashSection === sectionId && query) {
-        const params = new URLSearchParams(query);
-        const stepParam = params.get('step');
-        if (stepParam !== null) {
-          const parsed = parseInt(stepParam, 10);
-          if (!isNaN(parsed) && parsed >= 0 && parsed < totalSteps) {
-            setStep(parsed);
-          }
-        }
-      }
-    }
+  const clamp = useCallback((value: number) => clampStep(value, totalSteps), [totalSteps]);
 
-    parseHash();
-    window.addEventListener('hashchange', parseHash);
-    return () => window.removeEventListener('hashchange', parseHash);
-  }, [sectionId, totalSteps]);
+  const scrollLock = useCallback(() => {
+    isProgrammaticScroll.current = true;
+    lockTime.current = Date.now();
+    // Fallback so the lock can never stick forever if no scroll/input arrives.
+    if (isProgrammaticScrollTimer.current) clearTimeout(isProgrammaticScrollTimer.current);
+    isProgrammaticScrollTimer.current = setTimeout(() => {
+      isProgrammaticScroll.current = false;
+    }, 4000);
+  }, []);
 
-  // Set step and optionally scroll matching beat element into view
-  const setStepAndScroll = useCallback(
-    (newStep: number, scrollBeat = true) => {
-      const bounded = Math.max(0, Math.min(newStep, totalSteps - 1));
-      setStep(bounded);
-
-      // Update URL hash without jumping
-      try {
-        const newUrl = `#${sectionId}?step=${bounded}`;
-        window.history.replaceState(null, '', newUrl);
-      } catch {
-        // ignore
-      }
-
-      if (scrollBeat) {
-        const beatEl = document.getElementById(`${sectionId}-beat-${bounded}`);
-        if (beatEl) {
-          beatEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+  const scrollToBeat = useCallback(
+    (bounded: number) => {
+      const beat = document.getElementById(`${sectionId}-beat-${bounded}`);
+      const el = beat ?? document.getElementById(sectionId);
+      if (el) {
+        scrollLock();
+        // Instant, not smooth: a long smooth scroll outlives the guard and the
+        // observer would then latch onto whatever beat is mid-flight.
+        el.scrollIntoView({ behavior: 'auto', block: 'center' });
       }
     },
-    [sectionId, totalSteps]
+    [sectionId, scrollLock]
   );
 
-  return {
-    step,
-    setStep: setStepAndScroll,
-  };
+  /** Programmatic step change (buttons, scrubber, keyboard, deep link). */
+  const setStep = useCallback(
+    (newStep: number, scrollBeat = true) => {
+      const bounded = clamp(newStep);
+      setStepState(bounded);
+
+      try {
+        window.history.replaceState(null, '', `#${sectionId}?step=${bounded}`);
+      } catch {
+        // history may be unavailable (e.g. file://)
+      }
+
+      if (scrollBeat) scrollToBeat(bounded);
+    },
+    [sectionId, clamp, scrollToBeat]
+  );
+
+  /** Called by the scroll observer. Ignored while a programmatic scroll runs. */
+  const setStepFromScroll = useCallback(
+    (newStep: number) => {
+      if (isProgrammaticScroll.current) return;
+      const bounded = clamp(newStep);
+      setStepState(prev => (prev === bounded ? prev : bounded));
+    },
+    [clamp]
+  );
+
+  // Deep links: #attention?step=3 sets the step and scrolls the section in.
+  useEffect(() => {
+    function applyHash(scroll: boolean) {
+      const target = parseSectionHash(window.location.hash);
+      if (!target || target.section !== sectionId || target.step === null) return;
+      const bounded = clamp(target.step);
+      setStepState(bounded);
+      if (scroll) scrollToBeat(bounded);
+    }
+    applyHash(true);
+    function onHashChange() {
+      applyHash(false);
+    }
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, [sectionId, clamp, scrollToBeat]);
+
+  // Release the programmatic-scroll lock only on real user scroll intent. A
+  // `scroll` event that lands long after our own instant scroll counts as the
+  // user; wheel/touch always do. This stops a late IntersectionObserver
+  // delivery from yanking the step to a stale beat after a button press.
+  useEffect(() => {
+    const release = () => {
+      isProgrammaticScroll.current = false;
+    };
+    const onScroll = () => {
+      if (isProgrammaticScroll.current && Date.now() - lockTime.current > 250) release();
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('wheel', release, { passive: true });
+    window.addEventListener('touchstart', release, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('wheel', release);
+      window.removeEventListener('touchstart', release);
+      if (isProgrammaticScrollTimer.current) clearTimeout(isProgrammaticScrollTimer.current);
+    };
+  }, []);
+
+  return { step, setStep, setStepFromScroll };
 }

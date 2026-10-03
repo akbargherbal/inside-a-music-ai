@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import rawData from './data.json';
 import { W7DataSchema, type W7Data } from './schema';
@@ -16,11 +16,16 @@ interface W7Props {
 export const W7LoopWidget: React.FC<W7Props> = ({ step, reducedMotion }) => {
   const [playbackIteration, setPlaybackIteration] = useState<number | undefined>(undefined);
   const [inspectedStepIndex, setInspectedStepIndex] = useState<number | null>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [speedMs, setSpeedMs] = useState<number>(700);
 
   const scene = getSceneState(step, data, {
     playbackIteration,
     inspectedStepIndex,
   });
+
+  const currentIteration =
+    playbackIteration !== undefined ? playbackIteration : scene.history.length;
 
   const handleStepForward = () => {
     setPlaybackIteration(prev => {
@@ -30,9 +35,29 @@ export const W7LoopWidget: React.FC<W7Props> = ({ step, reducedMotion }) => {
   };
 
   const handleReset = () => {
+    setIsPlaying(false);
     setPlaybackIteration(0);
     setInspectedStepIndex(null);
   };
+
+  // Auto-play the loop one token at a time. Never starts on its own, so
+  // reduced-motion users are unaffected until they press Play.
+  useEffect(() => {
+    if (!isPlaying) return;
+    if (currentIteration >= data.scriptedSteps.length) {
+      setIsPlaying(false);
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      setPlaybackIteration(prev => {
+        const current = prev !== undefined ? prev : (step >= 4 ? 4 : (step >= 2 ? 1 : 0));
+        const next = Math.min(4, current + 1);
+        if (next >= data.scriptedSteps.length) setIsPlaying(false);
+        return next;
+      });
+    }, speedMs);
+    return () => window.clearTimeout(timer);
+  }, [isPlaying, currentIteration, speedMs, step, data.scriptedSteps.length]);
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-4 py-2">
@@ -48,18 +73,43 @@ export const W7LoopWidget: React.FC<W7Props> = ({ step, reducedMotion }) => {
         </div>
         {step < 6 && (
           <div className="flex items-center gap-2">
+            <label className="hidden sm:flex items-center gap-1 text-[11px] text-slate-500">
+              Speed
+              <select
+                value={speedMs}
+                onChange={e => setSpeedMs(Number(e.target.value))}
+                className="bg-slate-900 border border-slate-700 rounded px-1 py-0.5 text-slate-300"
+                aria-label="Playback speed"
+              >
+                <option value={1200}>Slow</option>
+                <option value={700}>Normal</option>
+                <option value={350}>Fast</option>
+              </select>
+            </label>
+            <button
+              type="button"
+              onClick={() => setIsPlaying(p => !p)}
+              disabled={scene.isFinished && !isPlaying}
+              aria-label={isPlaying ? 'Pause generation loop' : 'Play generation loop'}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs font-medium hover:bg-emerald-900 disabled:opacity-30 disabled:border-slate-800 disabled:text-slate-500"
+            >
+              {isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+              {isPlaying ? 'Pause' : 'Play'}
+            </button>
             <button
               type="button"
               onClick={handleStepForward}
               disabled={scene.isFinished}
+              aria-label="Step forward one token"
               className="px-2.5 py-1 rounded bg-sky-950/80 border border-sky-600 text-sky-300 text-xs font-medium hover:bg-sky-900 disabled:opacity-30 disabled:border-slate-800 disabled:text-slate-500"
             >
-              +1 Next Token
+              +1 Step
             </button>
             <button
               type="button"
               onClick={handleReset}
               title="Reset loop"
+              aria-label="Reset generation loop"
               className="p-1 text-slate-400 hover:text-white"
             >
               <RotateCcw className="w-3.5 h-3.5" />

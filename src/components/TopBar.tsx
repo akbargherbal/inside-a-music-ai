@@ -1,11 +1,13 @@
 import React from 'react';
-import { BookOpen, Sparkles, Activity } from 'lucide-react';
+import { BookOpen, Activity, Sun, Moon } from 'lucide-react';
 
 interface TopBarProps {
   onOpenGlossary: () => void;
   reducedMotion: boolean;
   onToggleReducedMotion: () => void;
   currentSectionId?: string;
+  theme: 'light' | 'dark';
+  onToggleTheme: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -13,6 +15,8 @@ export const TopBar: React.FC<TopBarProps> = ({
   reducedMotion,
   onToggleReducedMotion,
   currentSectionId,
+  theme,
+  onToggleTheme,
 }) => {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md">
@@ -87,6 +91,19 @@ export const TopBar: React.FC<TopBarProps> = ({
 
         {/* Zone 3: 1-2 primary actions */}
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onToggleTheme}
+            title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+            className="p-2 rounded-lg text-xs font-medium border transition-colors flex items-center gap-1.5 bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200"
+            aria-label="Toggle colour theme"
+          >
+            {theme === 'dark' ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+            <span className="hidden sm:inline text-[11px]">
+              {theme === 'dark' ? 'Light' : 'Dark'}
+            </span>
+          </button>
+
           <button
             type="button"
             onClick={onToggleReducedMotion}

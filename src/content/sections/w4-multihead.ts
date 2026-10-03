@@ -28,7 +28,7 @@ export const SECTION_W4: ConceptSection = {
       liveCaption: 'Four heatmaps side by side with the 9-token sentence on both axes.',
     },
     {
-      caption: 'Look at their habits: Head 1 tracks grammar ("look one word back"), Head 2 links pronouns to objects, Head 3 focuses on musical tempo cues, and Head 4 connects verbs.',
+      caption: 'Look at their habits: Head 1 tracks grammar ("look one word back"), Head 2 links pronouns to objects, Head 3 anchors on the sentence subject, and Head 4 connects verbs to their objects.',
       liveCaption: 'Four head cards describe illustrative linguistic specializations.',
     },
     {
@@ -80,7 +80,7 @@ print("Output dimensions: ", len(combined))
 print("Combined vector:   ", [round(x, 2) for x in combined])`,
       expectedOutput: `Heads count:        4
 Output dimensions:  8
-Combined vector:    [0.74, 0.0, 0.0, 0.74, 0.5, 0.5, 0.54, 0.54]`,
+Combined vector:    [0.74, 0.0, 0.0, 0.74, 0.5, 0.5, 0.27, 0.27]`,
     },
   ],
   recap: [

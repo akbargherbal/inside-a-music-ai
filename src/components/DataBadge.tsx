@@ -21,7 +21,7 @@ export const DataBadge: React.FC<DataBadgeProps> = ({ kind, customText, classNam
     >
       <span className={`w-1.5 h-1.5 rounded-full ${meta.dot} animate-pulse`} />
       <span className="font-semibold tracking-wide uppercase text-[10px]">{meta.label}</span>
-      <span className="hidden sm:inline opacity-75 font-normal">· {blurb}</span>
+      <span className="hidden sm:inline font-normal">· {blurb}</span>
       <Info className="w-3 h-3 ml-auto opacity-70 shrink-0 sm:hidden" />
     </div>
   );

@@ -67,7 +67,7 @@ export const SECTION_W5: ConceptSection = {
     return [x + y for x, y in zip(a, b)]
 
 def normalize(vec):
-    # Toy mean-zero unit-variance normalisation
+    # Toy mean-zero normalisation (subtract the average, keep the shape)
     mean = sum(vec) / len(vec)
     return [round(x - mean, 3) for x in vec]
 
@@ -97,7 +97,7 @@ x = add_vectors(x, ffn_out)
 x = normalize(x)
 
 print("Output representation:", x)`,
-      expectedOutput: `Output representation: [1.137, -1.863, 0.137, 0.587]`,
+      expectedOutput: `Output representation: [1.437, -2.437, 0.437, 0.563]`,
     },
   ],
   recap: [

@@ -33,6 +33,7 @@ export const W1TokenizationWidget: React.FC<W1Props> = ({ step, reducedMotion })
             <span className="text-slate-400 hidden sm:inline">Try your own text:</span>
             <input
               type="text"
+              aria-label="Text to tokenize"
               value={customText}
               onChange={e => setCustomText(e.target.value)}
               placeholder="e.g. Sunlight on the guitar"

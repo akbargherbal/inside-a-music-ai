@@ -69,6 +69,7 @@ export const W6SamplingWidget: React.FC<W6Props> = ({ step, reducedMotion }) => 
             </div>
             <input
               type="range"
+              aria-label="Temperature"
               min="0.1"
               max="2.0"
               step="0.05"
@@ -91,6 +92,7 @@ export const W6SamplingWidget: React.FC<W6Props> = ({ step, reducedMotion }) => 
             </div>
             <input
               type="range"
+              aria-label="Top-K cutoff"
               min="1"
               max="8"
               step="1"
@@ -112,6 +114,7 @@ export const W6SamplingWidget: React.FC<W6Props> = ({ step, reducedMotion }) => 
             </div>
             <input
               type="range"
+              aria-label="Top-P nucleus threshold"
               min="0.2"
               max="1.0"
               step="0.05"
@@ -131,6 +134,7 @@ export const W6SamplingWidget: React.FC<W6Props> = ({ step, reducedMotion }) => 
               <span className="text-slate-400">Seed:</span>
               <input
                 type="number"
+                aria-label="Random seed"
                 value={seed}
                 onChange={e => setSeed(parseInt(e.target.value, 10) || 0)}
                 className="w-20 px-2 py-1 bg-slate-900 border border-slate-750 rounded text-slate-200 text-xs focus:ring-1 focus:ring-sky-400"
@@ -174,6 +178,7 @@ export const W6SamplingWidget: React.FC<W6Props> = ({ step, reducedMotion }) => 
             </div>
             <input
               type="range"
+              aria-label="Classifier-free guidance scale"
               min="1.0"
               max="5.0"
               step="0.2"

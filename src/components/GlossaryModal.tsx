@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { X, Search, BookOpen, ExternalLink } from 'lucide-react';
-import { GLOSSARY, type GlossaryEntry } from '../content/glossary';
+import { GLOSSARY } from '../content/glossary';
 
 interface GlossaryModalProps {
   isOpen: boolean;
@@ -93,6 +93,7 @@ export const GlossaryModal: React.FC<GlossaryModalProps> = ({
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
+              aria-label="Search glossary"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search terms, definitions, analogies..."
@@ -101,7 +102,7 @@ export const GlossaryModal: React.FC<GlossaryModalProps> = ({
             />
           </div>
 
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+          <div tabIndex={0} aria-label="Glossary categories" className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs focus:outline-none focus:ring-1 focus:ring-sky-400">
             {categories.map(cat => (
               <button
                 key={cat.id}
@@ -120,7 +121,7 @@ export const GlossaryModal: React.FC<GlossaryModalProps> = ({
         </div>
 
         {/* Scrollable list */}
-        <div className="p-6 overflow-y-auto space-y-4 divide-y divide-slate-800/80">
+        <div tabIndex={0} aria-label="Glossary entries" className="p-6 overflow-y-auto space-y-4 divide-y divide-slate-800/80 focus:outline-none focus:ring-1 focus:ring-sky-400">
           {filteredEntries.length === 0 ? (
             <div className="text-center py-12 text-slate-500 text-sm">
               No matching terms found. Try a different search query.

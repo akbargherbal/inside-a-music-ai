@@ -1,12 +1,11 @@
 import { dot, euclideanDistance } from '../src/lib/ml/math';
 import { softmax } from '../src/lib/ml/softmax';
-import { singleHeadAttention, computeAttentionMatrix } from '../src/lib/ml/attention';
-import { applyTemperature, applyTopK, applyTopP, sampleCategorical } from '../src/lib/ml/sampling';
+import { singleHeadAttention } from '../src/lib/ml/attention';
+import { applyTemperature, applyTopK, sampleCategorical } from '../src/lib/ml/sampling';
 import { tokenizeGreedy } from '../src/lib/ml/tokenizer';
 import { createMulberry32 } from '../src/lib/rng';
 
 import { YUE2_FACTS } from '../src/content/facts';
-import { GLOSSARY } from '../src/content/glossary';
 
 import { SECTION_W1 } from '../src/content/sections/w1-tokenization';
 import { SECTION_W2 } from '../src/content/sections/w2-embeddings';
@@ -20,7 +19,6 @@ import { getSceneState as getW1Scene } from '../src/widgets/w1-tokenization/scen
 import { W1DataSchema } from '../src/widgets/w1-tokenization/schema';
 import rawW1 from '../src/widgets/w1-tokenization/data.json';
 
-import { getSceneState as getW2Scene } from '../src/widgets/w2-embeddings/scene';
 import { W2DataSchema } from '../src/widgets/w2-embeddings/schema';
 import rawW2 from '../src/widgets/w2-embeddings/data.json';
 
@@ -28,11 +26,9 @@ import { getSceneState as getW3Scene } from '../src/widgets/w3-attention/scene';
 import { W3DataSchema } from '../src/widgets/w3-attention/schema';
 import rawW3 from '../src/widgets/w3-attention/data.json';
 
-import { getSceneState as getW4Scene } from '../src/widgets/w4-multihead/scene';
 import { W4DataSchema } from '../src/widgets/w4-multihead/schema';
 import rawW4 from '../src/widgets/w4-multihead/data.json';
 
-import { getSceneState as getW5Scene } from '../src/widgets/w5-block/scene';
 import { W5DataSchema } from '../src/widgets/w5-block/schema';
 import rawW5 from '../src/widgets/w5-block/data.json';
 
@@ -40,7 +36,6 @@ import { getSceneState as getW6Scene } from '../src/widgets/w6-sampling/scene';
 import { W6DataSchema } from '../src/widgets/w6-sampling/schema';
 import rawW6 from '../src/widgets/w6-sampling/data.json';
 
-import { getSceneState as getW7Scene } from '../src/widgets/w7-loop/scene';
 import { W7DataSchema } from '../src/widgets/w7-loop/schema';
 import rawW7 from '../src/widgets/w7-loop/data.json';
 

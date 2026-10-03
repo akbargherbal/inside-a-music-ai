@@ -1,0 +1,3 @@
+Heads count:        4
+Output dimensions:  8
+Combined vector:    [0.74, 0.0, 0.0, 0.74, 0.5, 0.5, 0.27, 0.27]

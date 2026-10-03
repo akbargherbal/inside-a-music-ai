@@ -1,0 +1,2 @@
+Tokens: ['Sun', 'light', ' on', ' the', ' kitchen', ' floor']
+IDs:    [101, 102, 103, 104, 105, 106]

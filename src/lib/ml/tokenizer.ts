@@ -83,3 +83,11 @@ export function tokenizeGreedy(
 
   return result;
 }
+
+/**
+ * Rejoins token chunks back into the original string. Because the greedy
+ * tokenizer never drops or rewrites characters, detokenize(tokenize(x)) === x.
+ */
+export function detokenize(chunks: TokenChunk[]): string {
+  return chunks.map(chunk => chunk.text).join('');
+}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Music, Sparkles } from 'lucide-react';
+import { ArrowRight, Music } from 'lucide-react';
 import { DataBadge } from './DataBadge';
 
 interface HeroProps {

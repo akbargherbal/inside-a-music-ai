@@ -30,7 +30,7 @@ export const YuE2Link: React.FC<YuE2LinkProps> = ({
 
       {facts.length > 0 && (
         <div className="pt-3 border-t border-emerald-900/40 space-y-2">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-400/80">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-300">
             Verified Facts & Sources:
           </div>
           <ul className="space-y-1.5 text-xs text-slate-400">

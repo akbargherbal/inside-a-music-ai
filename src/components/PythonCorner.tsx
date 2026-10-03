@@ -80,7 +80,12 @@ export const PythonCorner: React.FC<PythonCornerProps> = ({
       )}
 
       {/* Code body */}
-      <div className="relative p-4 overflow-x-auto text-xs font-mono leading-relaxed bg-slate-950/90 text-slate-200">
+      <div
+        tabIndex={0}
+        role="region"
+        aria-label={`${title} Python source code`}
+        className="relative p-4 overflow-x-auto text-xs font-mono leading-relaxed bg-slate-950/90 text-slate-200 focus:outline-none focus:ring-1 focus:ring-sky-400"
+      >
         <pre className="selection:bg-sky-500/30">
           <code>{code}</code>
         </pre>
@@ -100,7 +105,11 @@ export const PythonCorner: React.FC<PythonCornerProps> = ({
             </button>
           </div>
           {showOutput && (
-            <pre className="mt-2 p-2.5 rounded bg-black/60 border border-slate-800 text-[11px] text-emerald-400/90 font-mono overflow-x-auto">
+            <pre
+              tabIndex={0}
+              aria-label={`${title} expected terminal output`}
+              className="mt-2 p-2.5 rounded bg-black/60 border border-slate-800 text-[11px] text-emerald-400/90 font-mono overflow-x-auto focus:outline-none focus:ring-1 focus:ring-sky-400"
+            >
               {expectedOutput}
             </pre>
           )}

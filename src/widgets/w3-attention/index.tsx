@@ -136,7 +136,7 @@ export const W3AttentionWidget: React.FC<W3Props> = ({ step, reducedMotion }) =>
               <span>Query "{scene.tokens[scene.queryIndex]}" · Dot Product with Keys:</span>
               <span className="text-slate-500 font-normal">Score = (Q · K) / √d</span>
             </div>
-            <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-1">
+            <div tabIndex={0} aria-label="Dot-product scores list" className="space-y-1.5 max-h-[220px] overflow-y-auto pr-1 focus:outline-none focus:ring-1 focus:ring-sky-400">
               {scene.tokens.map((tok, idx) => {
                 const score = scene.rawScores[idx];
                 const isMasked = score === -Infinity;
@@ -174,7 +174,7 @@ export const W3AttentionWidget: React.FC<W3Props> = ({ step, reducedMotion }) =>
               </span>
             </div>
 
-            <div className="space-y-1.5 max-h-[170px] overflow-y-auto pr-1">
+            <div tabIndex={0} aria-label="Attention weight percentages list" className="space-y-1.5 max-h-[170px] overflow-y-auto pr-1 focus:outline-none focus:ring-1 focus:ring-sky-400">
               {scene.tokens.map((tok, idx) => {
                 const weight = scene.weights[idx] || 0;
                 const pct = Math.round(weight * 100);

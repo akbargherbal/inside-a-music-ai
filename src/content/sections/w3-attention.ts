@@ -34,7 +34,7 @@ export const SECTION_W3: ConceptSection = {
     },
     {
       caption: 'We run these scores through softmax, converting them into positive percentages that sum to 100%. "Guitar" wins with the highest percentage!',
-      liveCaption: 'Softmax percentages shown; guitar receives ~58% attention weight.',
+      liveCaption: 'Softmax percentages shown; guitar receives the highest weight at about 17.5%.',
       newTerms: ['softmax'],
     },
     {
@@ -61,37 +61,44 @@ export const SECTION_W3: ConceptSection = {
       title: 'Single-Head Attention in Pure Python (Stdlib Only)',
       file: 'attention_single_head.py',
       tag: 'runnable',
-      explanation: 'Notice how dot product, softmax, and weighted blending match the animated widget steps exactly:',
+      explanation: 'This runs the exact same nine tokens and query vectors the widget animates, so every percentage matches the screen:',
       code: `import math
 
-def dot_product(vec_a, vec_b):
-    return sum(a * b for a, b in zip(vec_a, vec_b))
+tokens = ["The", "singer", "dropped", "the", "guitar",
+          "because", "it", "was", "heavy"]
 
-def softmax(scores):
-    max_s = max(scores)
-    exps = [math.exp(s - max_s) for s in scores]
-    total = sum(exps)
-    return [e / total for e in exps]
-
-# Query for "it", and Keys for ["The", "singer", "dropped", "guitar"]
+# Query for "it" (position 6) and the 9 Keys used by the widget
 q_it = [0.85, 0.10, 0.40, 0.90]
 keys = [
-    [0.10, 0.05, 0.20, 0.10], # "The"
-    [0.40, 0.70, 0.30, 0.20], # "singer"
-    [0.20, 0.30, 0.80, 0.10], # "dropped"
-    [0.80, 0.15, 0.35, 0.95], # "guitar"
+    [0.10, 0.05, 0.20, 0.10], # The
+    [0.40, 0.70, 0.30, 0.20], # singer
+    [0.20, 0.30, 0.80, 0.10], # dropped
+    [0.15, 0.06, 0.18, 0.12], # the
+    [0.80, 0.15, 0.35, 0.95], # guitar
+    [0.12, 0.08, 0.55, 0.25], # because
+    [0.20, 0.15, 0.25, 0.30], # it
+    [0.18, 0.22, 0.28, 0.20], # was
+    [0.65, 0.12, 0.68, 0.60], # heavy
 ]
+
+def dot_product(a, b):
+    return sum(x * y for x, y in zip(a, b))
+
+def softmax(scores):
+    top = max(scores)
+    exps = [math.exp(s - top) for s in scores]
+    total = sum(exps)
+    return [e / total for e in exps]
 
 scale = math.sqrt(len(q_it)) # sqrt(d_k)
 raw_scores = [dot_product(q_it, k) / scale for k in keys]
 weights = softmax(raw_scores)
+winner = weights.index(max(weights))
 
-print("Raw scores: ", [round(s, 3) for s in raw_scores])
-print("Softmax %:  ", [round(w * 100, 1) for w in weights])
-print("Winner:      Index", weights.index(max(weights)), "(guitar)")`,
-      expectedOutput: `Raw scores:  [0.13, 0.355, 0.305, 0.845]
-Softmax %:   [18.2, 22.8, 21.7, 37.2]
-Winner:      Index 3 (guitar)`,
+print("Weights %:", [round(w * 100, 1) for w in weights])
+print("Winner:   ", tokens[winner], "=", str(round(weights[winner] * 100, 1)) + "%")`,
+      expectedOutput: `Weights %: [8.6, 10.7, 10.2, 8.8, 17.5, 9.9, 9.9, 9.5, 15.0]
+Winner:    guitar = 17.5%`,
     },
   ],
   recap: [

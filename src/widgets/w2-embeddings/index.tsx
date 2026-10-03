@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import rawData from './data.json';
 import { W2DataSchema, type W2Data } from './schema';
@@ -22,8 +22,63 @@ export const W2EmbeddingsWidget: React.FC<W2Props> = ({ step, reducedMotion }) =
     draggedCoords,
   });
 
+  const mapRef = useRef<HTMLDivElement>(null);
+  const dragState = useRef<{
+    id: number;
+    startX: number;
+    startY: number;
+    origin: [number, number];
+  } | null>(null);
+
   const handleResetPositions = () => {
     setDraggedCoords({});
+  };
+
+  const clampCoord = (value: number) => Math.max(-100, Math.min(100, value));
+
+  const moveToken = (id: number, coords: [number, number]) => {
+    setDraggedCoords(prev => ({ ...prev, [id]: coords }));
+  };
+
+  const handlePointerDown = (
+    e: React.PointerEvent<HTMLDivElement>,
+    item: { id: number; currentCoords: [number, number] }
+  ) => {
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    dragState.current = {
+      id: item.id,
+      startX: e.clientX,
+      startY: e.clientY,
+      origin: item.currentCoords,
+    };
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const ds = dragState.current;
+    if (!ds || !mapRef.current) return;
+    const rect = mapRef.current.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
+    const dx = ((e.clientX - ds.startX) / rect.width) * 220;
+    const dy = -((e.clientY - ds.startY) / rect.height) * 220;
+    moveToken(ds.id, [clampCoord(ds.origin[0] + dx), clampCoord(ds.origin[1] + dy)]);
+  };
+
+  const handlePointerUp = () => {
+    dragState.current = null;
+  };
+
+  const handleTokenKeyDown = (
+    e: React.KeyboardEvent<HTMLDivElement>,
+    item: { id: number; currentCoords: [number, number] }
+  ) => {
+    const step = e.shiftKey ? 10 : 5;
+    if (e.key === 'ArrowLeft') moveToken(item.id, [clampCoord(item.currentCoords[0] - step), item.currentCoords[1]]);
+    else if (e.key === 'ArrowRight') moveToken(item.id, [clampCoord(item.currentCoords[0] + step), item.currentCoords[1]]);
+    else if (e.key === 'ArrowUp') moveToken(item.id, [item.currentCoords[0], clampCoord(item.currentCoords[1] + step)]);
+    else if (e.key === 'ArrowDown') moveToken(item.id, [item.currentCoords[0], clampCoord(item.currentCoords[1] - step)]);
+    else return;
+    e.preventDefault();
+    setSelectedTokenId(item.id);
   };
 
   return (
@@ -176,7 +231,13 @@ export const W2EmbeddingsWidget: React.FC<W2Props> = ({ step, reducedMotion }) =
 
         {/* Step 4 & 5: 2D Interactive Scatter Map */}
         {scene.displayMode === 'map-2d' && (
-          <div className="relative w-full h-[320px] bg-slate-950/90 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
+          <div
+            ref={mapRef}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
+            className="relative w-full h-[320px] bg-slate-950/90 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center touch-none"
+          >
             {/* Grid coordinate lines */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
               <div className="w-full h-px bg-slate-500" />
@@ -224,12 +285,17 @@ export const W2EmbeddingsWidget: React.FC<W2Props> = ({ step, reducedMotion }) =
               return (
                 <div
                   key={item.id}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Token ${item.token}. Drag, or use arrow keys to move it on the map.`}
                   style={{
                     left: `${leftPct}%`,
                     top: `${topPct}%`,
                   }}
+                  onPointerDown={e => handlePointerDown(e, item)}
                   onClick={() => setSelectedTokenId(item.id)}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer z-10 select-none transition-transform active:scale-95 ${
+                  onKeyDown={e => handleTokenKeyDown(e, item)}
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing z-10 select-none transition-transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-sky-400 rounded-lg ${
                     isSelected ? 'z-20' : ''
                   }`}
                 >
@@ -248,6 +314,12 @@ export const W2EmbeddingsWidget: React.FC<W2Props> = ({ step, reducedMotion }) =
               );
             })}
           </div>
+        )}
+
+        {scene.displayMode === 'map-2d' && (
+          <p className="text-[11px] text-slate-500 font-mono text-center">
+            Drag a token, or focus it and use the arrow keys (hold Shift for bigger steps).
+          </p>
         )}
       </div>
 
